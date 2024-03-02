@@ -47,7 +47,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{route('khach-hang.danh-sach')}}">
+                            <a class="nav-link" href="{{route('nha-cung-cap.danh-sach')}}">
                             <span data-feather="truck" class="align-text-bottom"></span>
                             Quản lý nhà cung cấp
                             </a>
@@ -65,7 +65,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{route('khach-hang.danh-sach')}}">
+                            <a class="nav-link" href="{{route('hoa-don.danh-sach')}}">
                             <span data-feather="shopping-bag" class="align-text-bottom"></span>
                             Quản lý hóa đơn
                             </a>

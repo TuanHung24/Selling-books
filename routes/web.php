@@ -27,7 +27,7 @@ Route::get('/', function () {
 Route::get('dang-nhap', [DangNhapController::class, 'dangNhap'])->name('dang-nhap');
 Route::post('dang-nhap', [DangNhapController::class, 'xuLyDangNhap'])->name('xl-dang-nhap');
 
-
+Route::middleware('auth')->group(function(){
 Route::prefix('sach')->group(function(){
     Route::name('sach.')->group(function(){
         Route::get('them-moi', [SanPhamController::class, 'themMoi'])->name('them-moi');
@@ -35,9 +35,8 @@ Route::prefix('sach')->group(function(){
         Route::get('/', [SanPhamController::class, 'danhSach'])->name('danh-sach');
         Route::get('/tim-kiem', [SanPhamController::class, 'timKiem'])->name('tim-kiem');
         Route::get('cap-nhat/{id}', [SanPhamController::class, 'capNhat'])->name('cap-nhat');
-        Route::get('khoi-phuc/{id}', [SanPhamController::class, 'khoiPhuc'])->name('khoi-phuc');
-        Route::get('xoa-vinh-vien/{id}', [SanPhamController::class, 'xoaVinhVien'])->name('xoa-vinh-vien');
-        Route::get('thung-rac', [SanPhamController::class, 'thungRac'])->name('thung-rac');
+        
+        
         Route::post('cap-nhat/{id}', [SanPhamController::class, 'xuLyCapNhat'])->name('xl-cap-nhat');
         Route::get('chi-tiet/{id}', [SanPhamController::class, 'chiTietSanPham'])->name('chi-tiet');
         Route::get('xoa/{id}', [SanPhamController::class, 'xoa'])->name('xoa'); 
@@ -51,9 +50,6 @@ Route::prefix('loai-sach')->group(function(){
         Route::get('/', [LoaiSanPhamController::class, 'danhSach'])->name('danh-sach');
         Route::get('/tim-kiem', [LoaiSanPhamController::class, 'timKiem'])->name('tim-kiem');
         Route::get('cap-nhat/{id}', [LoaiSanPhamController::class, 'capNhat'])->name('cap-nhat');
-        Route::get('khoi-phuc/{id}', [LoaiSanPhamController::class, 'khoiPhuc'])->name('khoi-phuc');
-        Route::get('xoa-vinh-vien/{id}', [LoaiSanPhamController::class, 'xoaVinhVien'])->name('xoa-vinh-vien');
-        Route::get('thung-rac', [LoaiSanPhamController::class, 'thungRac'])->name('thung-rac');
         Route::post('cap-nhat/{id}', [LoaiSanPhamController::class, 'xuLyCapNhat'])->name('xl-cap-nhat');
         Route::get('chi-tiet/{id}', [LoaiSanPhamController::class, 'chiTietSanPham'])->name('chi-tiet');
         Route::get('xoa/{id}', [LoaiSanPhamController::class, 'xoa'])->name('xoa'); 
@@ -117,4 +113,5 @@ Route::prefix('nhan-vien')->group(function(){
         Route::post('cap-nhat/{id}', [NhanVienController::class, 'xuLyCapNhat'])->name('xl-cap-nhat');
         Route::get('xoa/{id}', [NhanVienController::class, 'xoa'])->name('xoa');
     });
+});
 });

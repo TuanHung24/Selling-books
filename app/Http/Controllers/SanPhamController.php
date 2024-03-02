@@ -2,104 +2,67 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\SanPham;
+use App\Http\Controllers\Controller;
+use App\Models\HinhAnh;
+use App\Models\LoaiSach;
 use App\Models\LoaiSanPham;
+use App\Models\Sach;
+use App\Models\SanPham;
+use Illuminate\Http\Request;
+
 class SanPhamController extends Controller
 {
     public function themMoi()
     {
-        $adminLogin=session()->get('admin_login');
-        if(empty($adminLogin))
-        {
-            return redirect()->route('dang-nhap');
-        }
-        $dsLoaiSanPham=LoaiSanPham::all();
-        return view('san-pham.them-moi',compact('dsLoaiSanPham'));
+        $dsLoaiSanPham=LoaiSach::all();
+        return view('sach.them-moi',compact('dsLoaiSanPham'));
     }
 
     public function xuLyThemMoi(Request $request)
     {
-        $adminLogin=session()->get('admin_login');
-        if(empty($adminLogin))
+        
+        $files=$request->hinh_anh;
+        $paths=[];
+        
+        foreach($files as $file)
         {
-            return redirect()->route('dang-nhap');
-        }
-        $sanPham = new SanPham();
-        $sanPham->ten       = $request->ten;
-        $sanPham->mo_ta          = $request->mo_ta;
-        $sanPham->gia          = $request->gia;
-        $sanPham->so_luong          = $request->so_luong;
-        $sanPham->loai_san_pham_id      = $request->loai_san_pham;
-        $sanPham->nha_cung_cap        = $request->nha_cung_cap;
+            if ($file->isValid() && in_array($file->getClientOriginalExtension(), ['jpg', 'png', 'jpeg'])) {
+                // Kiểm tra kích thước của từng tệp tin
+                $maxSize = 10240; // 10MB
+                if ($file->getSize() <= $maxSize * 1024) { // Chuyển đổi sang byte
+                    $paths[] = $file->store('uploads');
+                } else {
+                    // Kích thước hình ảnh quá lớn
+                    return redirect()->back()->with(['error'=>"Kích thước hình ảnh quá lớn. Vui lòng chọn hình ảnh nhỏ hơn 10MB."]);
+                }
+            } else {
+                // Tệp không phải là hình ảnh
+                return redirect()->back()->with(['error'=>"Tệp không phải là hình ảnh jpg, png, hoặc jpeg."]);
+            }
+           
+        }     
+        $sanPham = new Sach();
+        $sanPham->ten               = $request->ten;
+        $sanPham->mo_ta             = $request->mo_ta;
+        $sanPham->loai_san_pham_id  = $request->loai_san_pham;
         $sanPham->save();
-        return redirect()->route('san-pham.danh-sach')->with(['thong_bao'=>"Thêm sản phẩm {$sanPham->ten} thành công!"]);
-    }
 
+        
+
+        
+        for($i=0;$i<count($paths);$i++)
+        {
+            $hinhAnh=new HinhAnh();
+            $hinhAnh->sach_id=$sanPham->id;
+            $hinhAnh->img_url=$paths[$i];
+            $hinhAnh->save();
+        }
+        
+        return redirect()->route('sach.danh-sach')->with(['thong_bao'=>"Thêm sản phẩm {$sanPham->ten} thành công!"]);
+    }
     public function danhSach()
     {
-        #kiểm tra trạng thái đăng nhập của admin
-        $adminLogin=session()->get('admin_login');
-        if(empty($adminLogin))
-        {
-            return redirect()->route('dang-nhap');
-        }
-        $dsSanPham=SanPham::all();
-        return view("san-pham.danh-sach", compact('dsSanPham'));
-    }
-
-    public function capNhat($id)
-    {
-        $adminLogin=session()->get('admin_login');
-        if(empty($adminLogin))
-        {
-            return redirect()->route('dang-nhap');
-        }
-        $dsLoaiSanPham=LoaiSanPham::all();
-        $sanPham = SanPham::find($id);
-        if (empty($sanPham)) {
-            return "Sản phẩm không tồn tại";
-        }
-
-        return view('san-pham.cap-nhat', compact('sanPham', 'dsLoaiSanPham'));
-    }
-
-    public function xuLyCapNhat(Request $request, $id)
-    {
-        $adminLogin=session()->get('admin_login');
-        if(empty($adminLogin))
-        {
-            return redirect()->route('dang-nhap');
-        }
-        $sanPham = SanPham::find($id);
-        if (empty($sanPham)) {
-            return view('san-pham.cap-nhat', compact('sanPham', 'dsLoaiSanPham'));
-        }
-        
-        $sanPham->ten       = $request->ten;
-        $sanPham->mo_ta          = $request->mo_ta;
-        $sanPham->gia          = $request->gia;
-        $sanPham->so_luong          = $request->so_luong;
-        $sanPham->loai_san_pham_id        = $request->loai_san_pham;
-        $sanPham->nha_cung_cap        = $request->nha_cung_cap;
-        $sanPham->save();
-
-        return redirect()->route('san-pham.danh-sach')->with(['thong_bao'=>"Cập nhật sản phẩm {$sanPham->ten} thành công!"]);
-    }
-
-    public function xoa($id)
-    {
-        $adminLogin=session()->get('admin_login');
-        if(empty($adminLogin))
-        {
-            return redirect()->route('dang-nhap');
-        }
-        $sanPham = SanPham::find($id);
-        if (empty($sanPham)) {
-            return "Sản phẩm không tồn tại";
-        }
-        
-        $sanPham->delete();
-        return redirect()->route('san-pham.danh-sach')->with(['thong_bao'=>"Xóa sản phẩm {$sanPham->ten} thành công!"]);
+        $dsSanPham=Sach::paginate(10);
+        return view("sach.danh-sach", compact('dsSanPham'));
     }
 }

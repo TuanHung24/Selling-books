@@ -115,7 +115,7 @@
     @endif
     
 </div>
-{{ $dsHoaDon->links('vendor.pagination.default') }}
+
 <script>
 function confirmHuyDon(url) {
     if (confirm("Bạn có chắc chắn muốn hủy đơn này?")) {
